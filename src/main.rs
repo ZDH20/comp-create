@@ -10,6 +10,7 @@ const CPP_MAKEFILE: &str = "CXX = g++\nCXXFLAGS = -std=c++20\n\nSRC = main.cpp\n
 const DIR_FLAG: &str = "-d";
 const LANG_FLAG: &str = "-l";
 const FOLDER_NAME_FLAG: &str = "-f";
+const HELP_FLAG: &str = "-h";
 
 #[derive(Debug)]
 enum Errors {
@@ -39,6 +40,11 @@ fn parse_input(tokens: &Vec<&str>) -> Result<(Vec<String>, Vec<Langs>, String), 
     let mut directory = String::new();
 
     for token in tokens {
+        if *token == HELP_FLAG {
+            help();
+            std::process::exit(0);
+        }
+
         if *token == DIR_FLAG {
             if dir_flag || directory.len() > 0 {
                 return Err(Errors::IllegalInputError);
@@ -155,8 +161,34 @@ fn create_folder_and_files(
     Ok(())
 }
 
+fn usage() {
+    println!("Usage: ./comp_create -f <folder name> -l <language> -d <directory>");
+}
+
+fn help() {
+    usage();
+    println!("Flags:");
+    println!("  -f: Folder name. Can be a single string or multiple strings separated by spaces.");
+    println!("  -l: Language. Can be a single language or multiple languages separated by spaces.");
+    println!("  -d: Directory. The directory to create the folder in.");
+    println!("  -h: Help. Prints this message.");
+    println!("Languages:");
+    println!("  cpp: C++: Creates a main.cpp file and a Makefile.");
+    println!("  c: C: Creates a main.c file and a Makefile.");
+    println!("  py: Python: Creates a main.py file.");
+    println!("  java: Java: Creates a main.java file.");
+    println!("Examples:");
+    println!("  ./comp_create -f \"My Programming Problem.\" \"Another Problem.\" -l cpp -d ../");
+    println!("  ./comp_create -f \"My Programming Problem.\" \"Another Problem.\" -l cpp py -d ~/dev/");
+    println!("  ./comp_create -f \"My Programming Problem.\" -l cpp -d .");
+}
+
 fn main() {
-    let args = vec!["-f", "Single source shortest path, non-negative weights", "testfile", "-l", "cpp", "c", "-d", "../"];
+    if args.len() < 2 {
+        usage();
+        println!("Rerun with -h for examples.");
+        return;
+    } 
 
     match parse_input(&args) {
         Err(e) => {

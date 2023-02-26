@@ -3,7 +3,7 @@ use std::path::PathBuf;
 const CPP: &str = "#include <iostream>\n\nint main(void) {\n  // ...\n  return 0;\n}\n";
 const C: &str = "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n  // ...\n  return 0;\n}\n";
 const PY: &str = "def main():\n    # ...\n\nif __name__ == '__main__':\n    main()\n";
-const JAVA: &str = "public class Main {\n\n    public const void main(String[] args) {\n        // ...\n    }\n}\n";
+const JAVA: &str = "public class Main {\n\n    public static void main(String[] args) {\n        // ...\n    }\n}\n";
 const C_MAKEFILE: &str = "CC = gcc\nCFLAGS = -std=c17\n\nSRC = main.c\nOBJ = $(SRC:.c=.o)\n\n.PHONY: all clean\n\nall: main\n\nclean:\n\t$(RM) $(OBJ) main\n\nmain: $(OBJ)\n\t$(CC) $(CFLAGS) -o $@ $^\n\n%.o: %.c\n\t$(CC) $(CFLAGS) -c $< -o $@\n";
 const CPP_MAKEFILE: &str = "CXX = g++\nCXXFLAGS = -std=c++20\n\nSRC = main.cpp\nOBJ = $(SRC:.cpp=.o)\n\n.PHONY: all clean\n\nall: main\n\nclean:\n\t$(RM) $(OBJ) main\n\nmain: $(OBJ)\n\t$(CXX) $(CXXFLAGS) -o $@ $^\n\n%.o: %.cpp\n\t$(CXX) $(CXXFLAGS) -c $< -o $@\n";
 

@@ -32,19 +32,23 @@ enum Langs {
 }
 
 fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String), Errors> {
+    println!("parsing: {:?}", tokens);
     let mut langs = Vec::<Langs>::new();
     let mut folders = Vec::<String>::new();
     let (mut lang_flag, mut dir_flag, mut folder_flag) = (false, false, false);
     let mut directory = String::new();
 
     for token in tokens {
+        print!("Token: {token}");
         let token: &str = token.as_str();
         if token == HELP_FLAG {
+            print!("\tHELP FLAG\n");
             help();
             std::process::exit(0);
         }
 
         if token == DIR_FLAG {
+            print!("\tDIR FLAG\n");
             if dir_flag || directory.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
@@ -52,6 +56,7 @@ fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String)
             lang_flag = false;
             folder_flag = false;
         } else if token == LANG_FLAG {
+            print!("\tLANG FLAG\n");
             if lang_flag || langs.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
@@ -59,6 +64,7 @@ fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String)
             dir_flag = false;
             folder_flag = false;
         } else if token == FOLDER_NAME_FLAG {
+            print!("\tFOLDER NAME FLAG\n");
             if folder_flag || folders.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
@@ -66,8 +72,10 @@ fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String)
             dir_flag = false;
             lang_flag = false;
         } else if dir_flag {
+            print!("\tDIR\n");
             directory = token.to_string();
         } else if lang_flag {
+            print!("\tLANG\n");
             match token {
                 "cpp" => langs.push(Langs::CPP),
                 "c" => langs.push(Langs::C),
@@ -76,6 +84,7 @@ fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String)
                 _ => return Err(Errors::IllegalLanguageError),
             }
         } else if folder_flag {
+            print!("\tFOLDER NAME\n");
             folders.push(token.to_string());
         } else {
             return Err(Errors::IllegalInputError);
@@ -184,8 +193,9 @@ fn help() {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    let args = args[1..].to_vec();
 
-    if args.len() < 2 {
+    if args.len() == 0 {
         usage();
         println!("Rerun with -h for examples.");
         return;

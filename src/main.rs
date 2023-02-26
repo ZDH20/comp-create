@@ -20,7 +20,6 @@ enum Errors {
     IllegalInputError,
     NoFolderNameError,
     UnbalancedLanguagesError,
-    NoSuchDirectoryError,
 }
 
 #[derive(Debug)]
@@ -123,44 +122,51 @@ fn create_folder_and_files(
     let mut path = path.clone();
     path.push(folder_name);
     std::fs::create_dir(&path).unwrap();
+    println!("Created folder: {}", path.display());
     path.push("main");
     match lang {
         Langs::CPP => {
             path.set_extension("cpp");
             std::fs::write(&path, CPP).unwrap();
+            println!("Wrote to file: {}", path.display());
             path.set_file_name("Makefile");
             std::fs::write(&path, CPP_MAKEFILE).unwrap();
+            println!("Wrote to Makefile file: {}", path.display());
         }
         Langs::C => {
             path.set_extension("c");
             std::fs::write(&path, C).unwrap();
+            println!("Wrote to file: {}", path.display());
             path.set_file_name("Makefile");
             std::fs::write(&path, C_MAKEFILE).unwrap();
+            println!("Wrote to Makefile file: {}", path.display());
         }
         Langs::PYTHON => {
             path.set_extension("py");
             std::fs::write(&path, PY).unwrap();
+            println!("Wrote to file: {}", path.display());
         }
         Langs::JAVA => {
             path.set_extension("java");
             std::fs::write(&path, JAVA).unwrap();
+            println!("Wrote to file: {}", path.display());
         }
     }
     Ok(())
 }
 
 fn main() {
-    let args = vec!["-f", "Single source shortest path, non-negative weights", "testfile", "-l", "cpp", "-d", "../"];
+    let args = vec!["-f", "Single source shortest path, non-negative weights", "testfile", "-l", "cpp", "c", "-d", "../"];
 
     match parse_input(&args) {
         Err(e) => {
-            println!("Error: {:?}", e);
+            eprintln!("Error: {:?}", e);
             return;
         },
         Ok((folders, langs, dir)) => {
             let path = match std::fs::canonicalize(&dir) {
                 Err(e) => {
-                    println!("Error: {:?}", e);
+                    eprintln!("Error: {:?}", e);
                     return;
                 },
                 Ok(path) => path,
@@ -168,7 +174,7 @@ fn main() {
             for i in 0..folders.len() {
                 let folder_name = match create_folder_name(&folders[i]) {
                     Err(e) => {
-                        println!("Error: {:?}", e);
+                        eprintln!("Error: {:?}", e);
                         return;
                     },
                     Ok(name) => name,
@@ -176,11 +182,12 @@ fn main() {
                 let lang = if langs.len() == 1 { &langs[0] } else { &langs[i] };
                 match create_folder_and_files(&folder_name, lang, &path) {
                     Err(e) => {
-                        println!("Error: {:?}", e);
+                        eprintln!("Error: {:?}", e);
                         return;
                     },
                     Ok(_) => (),
                 }
+                println!("Completed folder: {}", folder_name);
             }
         }
     }

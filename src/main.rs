@@ -31,35 +31,34 @@ enum Langs {
     JAVA,
 }
 
-fn parse_input(tokens: &Vec<&str>) -> Result<(Vec<String>, Vec<Langs>, String), Errors> {
+fn parse_input(tokens: &Vec<String>) -> Result<(Vec<String>, Vec<Langs>, String), Errors> {
     let mut langs = Vec::<Langs>::new();
     let mut folders = Vec::<String>::new();
-    let mut lang_flag = false;
-    let mut dir_flag = false;
-    let mut folder_flag = false;
+    let (mut lang_flag, mut dir_flag, mut folder_flag) = (false, false, false);
     let mut directory = String::new();
 
     for token in tokens {
-        if *token == HELP_FLAG {
+        let token: &str = token.as_str();
+        if token == HELP_FLAG {
             help();
             std::process::exit(0);
         }
 
-        if *token == DIR_FLAG {
+        if token == DIR_FLAG {
             if dir_flag || directory.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
             dir_flag = true;
             lang_flag = false;
             folder_flag = false;
-        } else if *token == LANG_FLAG {
+        } else if token == LANG_FLAG {
             if lang_flag || langs.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
             lang_flag = true;
             dir_flag = false;
             folder_flag = false;
-        } else if *token == FOLDER_NAME_FLAG {
+        } else if token == FOLDER_NAME_FLAG {
             if folder_flag || folders.len() > 0 {
                 return Err(Errors::IllegalInputError);
             }
@@ -69,7 +68,7 @@ fn parse_input(tokens: &Vec<&str>) -> Result<(Vec<String>, Vec<Langs>, String), 
         } else if dir_flag {
             directory = token.to_string();
         } else if lang_flag {
-            match *token {
+            match token {
                 "cpp" => langs.push(Langs::CPP),
                 "c" => langs.push(Langs::C),
                 "py" => langs.push(Langs::PYTHON),
@@ -184,6 +183,8 @@ fn help() {
 }
 
 fn main() {
+    let args: Vec<String> = std::env::args().collect();
+
     if args.len() < 2 {
         usage();
         println!("Rerun with -h for examples.");
